@@ -1,41 +1,12 @@
 from collections import namedtuple
 import asyncio
 import logging
-from asyncio.queues import Queue
 
 from kubernetes_asyncio import client, config, watch
 
+from .coalesce import CoalescingQueue
+
 Delta = namedtuple('Delta', ['type', 'old', 'new'])
-
-class CoalescingQueue(Queue):
-    """
-    Coalescing wrapper around asyncio.Queue
-
-    When putting a value into this queue, a key is also required.
-    If another value with this key already exists in this queue,
-    the value is overwritten with new value (while still maintaining
-    its place in the queue).
-
-    This primarily helps write code that is 'level triggered' rather
-    than 'edge triggered'. When a `get` returns, it returns the value
-    that contains the *last* event that has happened to this key
-    since the last time it was processed. 
-    """
-    def _put(self, item):
-        key, value = item
-        try:
-            self._queue.remove(key)
-        except ValueError:
-            pass
-        self.store[key] = value
-        self._queue.append(key)
-
-    def _init(self, maxsize):
-        super()._init(maxsize)
-        self.store = {}
-
-    def _get(self):
-        return self.store[super()._get()]
 
 
 class Reflector:
@@ -104,6 +75,7 @@ class Reflector:
                     old=old,
                     new=None
                 )))
+
             # FIXME: resync every resync_period, *not* resync_period after last resync
             await asyncio.sleep(self.resync_period)
 
