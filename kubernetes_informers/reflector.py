@@ -52,7 +52,7 @@ class Reflector:
                     old_resource = self.resources[key]
                     if old_resource.metadata.resource_version != new_resource.metadata.resource_version:
                         self.resources[key] = new_resource
-                        self.q.put((key, Delta(
+                        self.q.put_nowait((key, Delta(
                             type='changed',
                             old=old_resource,
                             new=new_resource
@@ -60,7 +60,7 @@ class Reflector:
                 else:
                     # Object has been added
                     self.resources[key] = new_resource
-                    self.q.put((key, Delta(
+                    self.q.put_nowait((key, Delta(
                         type='added',
                         new=new_resource,
                         old=None
@@ -70,7 +70,7 @@ class Reflector:
             for key in deleted_keys:
                 old = self.resources[key]
                 del self.resources[key]
-                self.q.put((key, Delta(
+                self.q.put_nowait((key, Delta(
                     type='deleted',
                     old=old,
                     new=None
