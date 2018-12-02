@@ -1,0 +1,1 @@
+from kubernetes_informers.reflector import CoalescingQueue
