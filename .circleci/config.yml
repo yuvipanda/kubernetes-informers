@@ -45,7 +45,8 @@ jobs:
           command: |
             . venv/bin/activate
             mkdir -p test-reports
-            py.test --junitxml=test-reports/junit.xml
+            py.test --junitxml=test-reports/junit.xml --cov=kubernetes_informers
+            codecov
 
       - store_test_results:
           path: test-reports
