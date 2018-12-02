@@ -24,4 +24,4 @@ minikube update-context
 JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'; until kubectl get nodes -o jsonpath="$JSONPATH" 2>&1 | grep -q "Ready=True"; do sleep 1; done
 
 # Wait for kube-dns to be ready
-kubectl --namespace=kube-system rollout status -w deployment/core-dns
+kubectl --namespace=kube-system rollout status -w deployment/coredns
