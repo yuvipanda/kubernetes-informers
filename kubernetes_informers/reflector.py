@@ -6,7 +6,7 @@ from kubernetes_asyncio import client, config, watch
 
 from .coalesce import CoalescingQueue
 
-Delta = namedtuple('Delta', ['type', 'old', 'new'])
+Delta = namedtuple('Delta', ['type', 'resource'])
 
 
 class Reflector:
@@ -54,16 +54,14 @@ class Reflector:
                         self.resources[key] = new_resource
                         self.q.put_nowait((key, Delta(
                             type='changed',
-                            old=old_resource,
-                            new=new_resource
+                            resource=new_resource
                         )))
                 else:
                     # Object has been added
                     self.resources[key] = new_resource
                     self.q.put_nowait((key, Delta(
                         type='added',
-                        new=new_resource,
-                        old=None
+                        resource=new_resource,
                     )))
 
             deleted_keys = set(self.resources.keys()) - set(new_resources.keys()) 
@@ -72,8 +70,7 @@ class Reflector:
                 del self.resources[key]
                 self.q.put_nowait((key, Delta(
                     type='deleted',
-                    old=old,
-                    new=None
+                    resource=old,
                 )))
 
             # FIXME: resync every resync_period, *not* resync_period after last resync
@@ -88,11 +85,7 @@ async def main():
     asyncio.ensure_future(r.reflect())
     while True:
         delta = await q.get()
-        if delta.type == 'added' or delta.type == 'changed':
-            print(delta.type, delta.new.metadata.name)
-        elif delta.type == 'deleted':
-            print(delta.type, delta.old.metadata.name)
-        await asyncio.sleep(5)
+        print(delta.type, delta.resource.metadata.name)
 
 
 if __name__ == '__main__':

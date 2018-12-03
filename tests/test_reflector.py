@@ -42,12 +42,12 @@ async def test_single_changes():
     ]
 
     deltas = [
-        Delta(type='added', old=None, new=make_pod('ns', 'pod1', 1)),
-        Delta(type='added', old=None, new=make_pod('ns', 'pod2', 1)),
-        Delta(type='changed', old=make_pod('ns', 'pod1', 1), new=make_pod('ns', 'pod1', 2)),
-        Delta(type='deleted', old=make_pod('ns', 'pod1', 2), new=None),
-        Delta(type='changed', old=make_pod('ns', 'pod2', 1), new=make_pod('ns', 'pod2', 2)),
-        Delta(type='deleted', old=make_pod('ns', 'pod2', 2), new=None),
+        Delta(type='added', resource=make_pod('ns', 'pod1', 1)),
+        Delta(type='added', resource=make_pod('ns', 'pod2', 1)),
+        Delta(type='changed', resource=make_pod('ns', 'pod1', 2)),
+        Delta(type='deleted', resource=make_pod('ns', 'pod1', 2)),
+        Delta(type='changed', resource=make_pod('ns', 'pod2', 2)),
+        Delta(type='deleted', resource=make_pod('ns', 'pod2', 2)),
     ]
 
     yield_states = iter(states)
@@ -113,30 +113,30 @@ async def test_multiple_changes():
 
     delta_batches = [
         [
-            Delta(type='added', old=None, new=make_pod('ns', 'pod1', 1)),
-            Delta(type='added', old=None, new=make_pod('ns', 'pod2', 1)),
+            Delta(type='added', resource=make_pod('ns', 'pod1', 1)),
+            Delta(type='added', resource=make_pod('ns', 'pod2', 1)),
         ],
         [
-            Delta(type='changed', old=make_pod('ns', 'pod1', 1), new=make_pod('ns', 'pod1', 2)),
+            Delta(type='changed', resource=make_pod('ns', 'pod1', 2)),
         ],
         [
-            Delta(type='deleted', old=make_pod('ns', 'pod1', 2), new=None),
+            Delta(type='deleted', resource=make_pod('ns', 'pod1', 2)),
         ],
         [
-            Delta(type='changed', old=make_pod('ns', 'pod2', 1), new=make_pod('ns', 'pod2', 2)),
+            Delta(type='changed', resource=make_pod('ns', 'pod2', 2)),
         ],
         [
-            Delta(type='added', old=None, new=make_pod('ns', 'pod3', 1)),
-            Delta(type='added', old=None, new=make_pod('ns', 'pod4', 1)),
+            Delta(type='added', resource=make_pod('ns', 'pod3', 1)),
+            Delta(type='added', resource=make_pod('ns', 'pod4', 1)),
         ],
         [
-            Delta(type='changed', old=make_pod('ns', 'pod3', 1), new=make_pod('ns', 'pod3', 2)),
-            Delta(type='changed', old=make_pod('ns', 'pod4', 1), new=make_pod('ns', 'pod4', 2)),
+            Delta(type='changed', resource=make_pod('ns', 'pod3', 2)),
+            Delta(type='changed', resource=make_pod('ns', 'pod4', 2)),
         ],
         [
-            Delta(type='deleted', old=make_pod('ns', 'pod2', 2), new=None),
-            Delta(type='deleted', old=make_pod('ns', 'pod3', 2), new=None),
-            Delta(type='deleted', old=make_pod('ns', 'pod4', 2), new=None),
+            Delta(type='deleted', resource=make_pod('ns', 'pod2', 2)),
+            Delta(type='deleted', resource=make_pod('ns', 'pod3', 2)),
+            Delta(type='deleted', resource=make_pod('ns', 'pod4', 2)),
         ]
     ]
 
